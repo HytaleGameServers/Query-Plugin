@@ -1,0 +1,14 @@
+{
+  "Group": "HGS",
+  "Name": "Query",
+  "Version": "0.0.1",
+  "Description": "A lightweight, secure plugin that automatically pushes real-time server data to HytaleGameServers, ensuring accurate listings without relying on unreliable query systems.",
+  "Website": "https://hytalegameservers.net",
+  "Main": "net.hytalegameservers.query.QueryPlugin",
+  "ServerVersion": "*",
+  "Authors": [
+    {
+      "Name": "Trae"
+    }
+  ]
+}

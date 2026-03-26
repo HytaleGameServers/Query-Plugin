@@ -1,0 +1,47 @@
+Copyright (c) 2026 Hytale Game Servers (hytalegameservers.net)
+
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to:
+
+  1. View, read, and study the source code for personal, educational, or
+     reference purposes.
+
+  2. Use the official, unmodified Software on Hytale game servers in
+     conjunction with a valid HytaleGameServers.net account and server listing.
+
+  3. Submit contributions (pull requests, issues, bug reports, and suggestions)
+     to the official repository at https://github.com/HytaleGameServers/Plugin.
+     By submitting a contribution, you grant Hytale Game Servers a perpetual,
+     irrevocable, royalty-free license to use, modify, and distribute your
+     contribution as part of the Software.
+
+The following actions are expressly prohibited without prior written permission
+from Hytale Game Servers:
+
+  - Modifying, adapting, or creating derivative works of the Software for
+    redistribution, commercial use, or personal deployment.
+
+  - Redistributing the Software or any modified version thereof, in whole
+    or in part, through any medium.
+
+  - Using the Software, its source code, or any portion thereof to circumvent,
+    bypass, or interfere with the security measures, rate limits, API
+    restrictions, or Terms of Service of HytaleGameServers.net.
+
+  - Reverse engineering the Software for the purpose of developing competing
+    products or services, or for any malicious purpose.
+
+  - Removing, altering, or obscuring this license notice, copyright notice,
+    or any branding associated with Hytale Game Servers.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+For licensing enquiries, contact: contact@hytalegameservers.net
