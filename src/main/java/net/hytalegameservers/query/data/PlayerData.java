@@ -10,6 +10,12 @@ import net.hytalegameservers.query.data.dto.PlayerDto;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Snapshot of current player information on this server instance.
+ *
+ * <p>Player usernames are only included if {@link Config#isSendOnlinePlayerUsernames()}
+ * is enabled. Player counts are always sent regardless of that setting.</p>
+ */
 @NoArgsConstructor
 @Getter
 @Setter

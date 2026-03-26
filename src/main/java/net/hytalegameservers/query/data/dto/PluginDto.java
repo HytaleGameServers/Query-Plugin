@@ -6,6 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Lightweight DTO representing a single installed plugin.
+ *
+ * <p>Only exposes group, name, and version — no sensitive or internal
+ * plugin data is transmitted.</p>
+ */
 @NoArgsConstructor
 @Getter
 @Setter

@@ -8,6 +8,12 @@ import lombok.Setter;
 import java.util.Locale;
 import java.util.UUID;
 
+/**
+ * Lightweight DTO representing a single online player.
+ *
+ * <p>Contains the player's UUID, display username, and a lowercase variant
+ * for case-insensitive operations on the backend.</p>
+ */
 @NoArgsConstructor
 @Getter
 @Setter

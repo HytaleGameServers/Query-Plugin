@@ -29,12 +29,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Manages all outbound API communication with the website.
+ *
+ * <p>Responsible for scheduling periodic status updates, handling dynamic
+ * interval changes from the API, and sending graceful shutdown notifications.</p>
+ *
+ * <p>In network mode, only the elected controller node sends updates to the API.
+ * The controller aggregates its own snapshot with snapshots collected from all
+ * peer nodes before dispatching.</p>
+ */
 @RequiredArgsConstructor
 @Service
 public class ApiManager implements Manager<QueryPlugin>, IApiManager {
 
+    /**
+     * Default update interval used until the API provides an override.
+     */
     private static final long DEFAULT_INTERVAL_UPDATE_IN_SECONDS = Duration.ofSeconds(30).toSeconds();
 
+    /**
+     * Maximum time to wait for peer snapshots before sending an update.
+     */
     private static final long SNAPSHOT_REQUEST_TIMEOUT_MS = 3000L;
 
     private final Config config;
@@ -43,11 +59,30 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
 
     private final NetworkManager networkManager;
 
+    /**
+     * The interval currently being used by the scheduler.
+     */
     private long currentIntervalUpdateInSeconds = DEFAULT_INTERVAL_UPDATE_IN_SECONDS;
+
+    /**
+     * The interval the API has told us to use — scheduler restarts if this differs.
+     */
     private long allowedIntervalUpdateInSeconds = DEFAULT_INTERVAL_UPDATE_IN_SECONDS;
 
+    /**
+     * Current lifecycle state of the API communication.
+     */
     private State state = State.NONE;
 
+    // -----------------------------------------------------------------------
+    // Lifecycle
+    // -----------------------------------------------------------------------
+
+    /**
+     * Validates configuration and starts the update scheduler.
+     *
+     * @throws IllegalStateException if serverId or apiToken are still set to placeholders
+     */
     @ApplicationReady
     public void onApplicationReady() {
         if (!(this.config.isEnabled())) {
@@ -66,6 +101,15 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
         this.startScheduler();
     }
 
+    /**
+     * Handles plugin shutdown.
+     *
+     * <p>In network mode, broadcasts a SHUTDOWN packet to all peers, then waits a
+     * random 1–5 seconds. The node that sleeps the longest will be the last one
+     * alive and responsible for sending the API shutdown call (leader-of-last-resort).</p>
+     *
+     * <p>In standalone mode, sends the shutdown call directly.</p>
+     */
     @PreDestroy
     public void onPreDestroy() {
         if (!(this.config.isEnabled())) {
@@ -75,12 +119,14 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
         if (this.networkConfig.isNetworkMode()) {
             this.networkManager.broadcastShutdown();
 
+            // Random sleep — the last node standing sends the API shutdown.
             try {
                 Thread.sleep(java.util.concurrent.ThreadLocalRandom.current().nextLong(1000, 5000));
             } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
 
+            // If other nodes are still alive, one of them will handle the shutdown.
             if (this.networkManager.getAliveNodeIds().size() > 1) {
                 return;
             }
@@ -89,6 +135,16 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
         this.executeShutdown();
     }
 
+    // -----------------------------------------------------------------------
+    // Update logic
+    // -----------------------------------------------------------------------
+
+    /**
+     * Executes a single update cycle.
+     *
+     * <p>Transitions state from {@code NONE → VERIFYING} on the first call.
+     * In network mode, only the controller proceeds past the gate check.</p>
+     */
     @Override
     public void executeUpdate() {
         if (this.state == State.NONE) {
@@ -113,6 +169,13 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
         this.sendUpdate(localSnapshot, remoteSnapshots);
     }
 
+    /**
+     * Sends a shutdown notification to the HGS API.
+     *
+     * <p>Only fires if the plugin has previously reached {@code VERIFYING} or
+     * {@code VERIFIED} state — prevents sending a shutdown for a server that
+     * never successfully connected.</p>
+     */
     @Override
     public void executeShutdown() {
         if (this.state != State.VERIFYING && this.state != State.VERIFIED) {
@@ -142,9 +205,15 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
     }
 
     // -----------------------------------------------------------------------
-    // Unified update — always sends instances array
+    // Payload construction
     // -----------------------------------------------------------------------
 
+    /**
+     * Builds the full update payload and dispatches it to the API.
+     *
+     * <p>The payload always contains an {@code instances} array, even in standalone
+     * mode (single element). In network mode, peer snapshots are appended.</p>
+     */
     private void sendUpdate(final NodeSnapshot localSnapshot, final Map<String, NodeSnapshot> remoteSnapshots) {
         final List<Map<String, Object>> instanceList = UtilJava.createCollection(new ArrayList<>(), list -> {
             list.add(this.buildInstanceEntry(localSnapshot));
@@ -163,6 +232,9 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
         this.sendToApi(dataMap);
     }
 
+    /**
+     * Converts a {@link NodeSnapshot} into a map structure for JSON serialization.
+     */
     private LinkedHashMap<String, Object> buildInstanceEntry(final NodeSnapshot nodeSnapshot) {
         return UtilJava.createMap(new LinkedHashMap<>(), map -> {
             map.put("nodeId", nodeSnapshot.getNodeId());
@@ -178,6 +250,14 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
     // HTTP
     // -----------------------------------------------------------------------
 
+    /**
+     * Sends the constructed payload to the HGS update endpoint.
+     *
+     * <p>On success (200), reads the response to check if the API wants to
+     * change the update interval. On status 833 (interval override), updates
+     * the allowed interval without changing state. On any other failure,
+     * resets state to {@code NONE} to re-trigger verification on the next cycle.</p>
+     */
     private void sendToApi(final LinkedHashMap<String, Object> dataMap) {
         try {
             final String jsonBody = Constants.OBJECT_MAPPER.writeValueAsString(dataMap);
@@ -194,6 +274,7 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
                 UtilLogger.info("<green>Update dispatched successfully.");
                 this.state = State.VERIFIED;
             } else {
+                // 833 = server-side interval override — update allowed interval silently.
                 if (httpResponse.statusCode() == 833) {
                     this.allowedIntervalUpdateInSeconds = Long.parseLong(httpResponse.body());
                     return;
@@ -207,10 +288,25 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
         }
     }
 
+    // -----------------------------------------------------------------------
+    // Scheduler
+    // -----------------------------------------------------------------------
+
+    /**
+     * Starts (or restarts) the asynchronous update scheduler.
+     *
+     * <p>Uses the {@code shouldRestart} callback to detect interval changes
+     * from the API and restart the scheduler with the new interval.</p>
+     */
     private void startScheduler() {
         UtilTask.scheduleAsynchronous(this::executeUpdate, 0, (int) this.currentIntervalUpdateInSeconds, TimeUnit.SECONDS, this::shouldRestart, true);
     }
 
+    /**
+     * Checks if the API has requested a different update interval.
+     *
+     * @return {@code true} if the scheduler should restart with a new interval
+     */
     private boolean shouldRestart() {
         if (this.currentIntervalUpdateInSeconds != this.allowedIntervalUpdateInSeconds) {
             UtilLogger.info("<aqua>Update interval changed from %ds to %ds, restarting scheduler.".formatted(this.currentIntervalUpdateInSeconds, this.allowedIntervalUpdateInSeconds));

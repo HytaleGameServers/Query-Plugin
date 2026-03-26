@@ -6,6 +6,12 @@ import lombok.Setter;
 import net.hytalegameservers.query.config.Config;
 import net.hytalegameservers.query.constants.Constants;
 
+/**
+ * Snapshot of the host system's environment information.
+ *
+ * <p>The OS name is included only if {@link Config#isSendSystemEnvironmentName()}
+ * is enabled. Otherwise, a redacted placeholder is sent.</p>
+ */
 @NoArgsConstructor
 @Getter
 @Setter

@@ -9,6 +9,12 @@ import net.hytalegameservers.query.QueryPlugin;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Snapshot of world information on this server instance.
+ *
+ * <p>Includes the default world name, total world count, and a list of
+ * all world names currently loaded.</p>
+ */
 @NoArgsConstructor
 @Getter
 @Setter

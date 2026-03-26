@@ -9,6 +9,13 @@ import net.hytalegameservers.query.QueryPlugin;
 
 import java.net.InetSocketAddress;
 
+/**
+ * Snapshot of core server metadata.
+ *
+ * <p>Includes connection details, server name, MOTD, version, password
+ * protection status, and boot timestamp. Address and port are resolved
+ * from the server's non-loopback binding.</p>
+ */
 @NoArgsConstructor
 @Getter
 @Setter
@@ -19,6 +26,9 @@ public class ServerData {
     private Boolean passwordProtected;
     private Long bootStartAt;
 
+    /**
+     * Creates a snapshot from the current server state.
+     */
     public static ServerData create() {
         final ServerData serverData = new ServerData();
         serverData.setAddress(serverData.buildAddress());
@@ -31,6 +41,9 @@ public class ServerData {
         return serverData;
     }
 
+    /**
+     * Resolves the server's non-loopback address, or {@code null} if unavailable.
+     */
     private String buildAddress() {
         try {
             final InetSocketAddress nonLoopbackAddress = QueryPlugin.SERVER_MANAGER.getNonLoopbackAddress();
@@ -43,6 +56,9 @@ public class ServerData {
         return null;
     }
 
+    /**
+     * Resolves the server's non-loopback port, or {@code null} if unavailable.
+     */
     private Integer buildPort() {
         try {
             final InetSocketAddress nonLoopbackAddress = QueryPlugin.SERVER_MANAGER.getNonLoopbackAddress();

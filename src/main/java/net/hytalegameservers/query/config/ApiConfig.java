@@ -7,6 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * API authentication configuration.
+ *
+ * <p>Contains the server's unique identifier and API token, both obtained
+ * from the server dashboard on the website. The plugin will refuse
+ * to start if either value is still set to its placeholder.</p>
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

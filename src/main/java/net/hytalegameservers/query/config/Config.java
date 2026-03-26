@@ -7,6 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * General plugin configuration.
+ *
+ * <p>Controls the master enable/disable toggle and privacy settings that
+ * determine what data is included in API update payloads.</p>
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
