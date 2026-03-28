@@ -15,7 +15,7 @@ This plugin keeps your server listing on HytaleGameServers.net up to date by per
 
 ## 📦 Installation
 
-1. Download the latest release from [Releases](https://github.com/HytaleGameServers/Plugin/releases)
+1. Download the latest release from [Releases](https://github.com/HytaleGameServers/Query-Plugin/releases)
 2. Place the JAR in your Hytale server's `mods/` directory
 3. Start your server — configuration files will be generated in `mods/HGS_Query/`
 4. Create an account and server listing on [HytaleGameServers.net](https://hytalegameservers.net)
@@ -144,7 +144,7 @@ There are two ways your server listing stays up to date — the **plugin** (this
 ## 🔨 Building from Source
 
 ```bash
-git clone https://github.com/HytaleGameServers/Plugin.git
+git clone https://github.com/HytaleGameServers/Query-Plugin.git
 cd Plugin
 mvn clean package
 ```
