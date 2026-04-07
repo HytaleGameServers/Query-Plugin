@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -121,7 +122,7 @@ public class ApiManager implements Manager<QueryPlugin>, IApiManager {
 
             // Random sleep — the last node standing sends the API shutdown.
             try {
-                Thread.sleep(java.util.concurrent.ThreadLocalRandom.current().nextLong(1000, 5000));
+                Thread.sleep(ThreadLocalRandom.current().nextLong(1000, 5000));
             } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
