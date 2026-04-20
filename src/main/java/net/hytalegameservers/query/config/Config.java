@@ -2,6 +2,7 @@ package net.hytalegameservers.query.config;
 
 import io.github.trae.di.configuration.annotations.Comment;
 import io.github.trae.di.configuration.annotations.Configuration;
+import io.github.trae.di.configuration.enums.ConfigType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@Configuration("Config")
+@Configuration(value = "Config", type = ConfigType.JSON)
 public class Config {
 
     @Comment("Whether the plugin is enabled. Set to false to completely disable all API communication.")

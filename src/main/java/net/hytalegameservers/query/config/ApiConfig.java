@@ -2,6 +2,7 @@ package net.hytalegameservers.query.config;
 
 import io.github.trae.di.configuration.annotations.Comment;
 import io.github.trae.di.configuration.annotations.Configuration;
+import io.github.trae.di.configuration.enums.ConfigType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@Configuration("Api")
+@Configuration(value = "Api", type = ConfigType.JSON)
 public class ApiConfig {
 
     public static final String SERVER_ID_PLACEHOLDER = "YOUR_SERVER_ID_HERE";

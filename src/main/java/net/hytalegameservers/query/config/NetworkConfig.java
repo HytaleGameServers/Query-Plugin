@@ -2,6 +2,7 @@ package net.hytalegameservers.query.config;
 
 import io.github.trae.di.configuration.annotations.Comment;
 import io.github.trae.di.configuration.annotations.Configuration;
+import io.github.trae.di.configuration.enums.ConfigType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Configuration("Network")
+@Configuration(value = "Network", type = ConfigType.JSON)
 public class NetworkConfig implements INetworkConfig {
 
     @Comment({"Whether network mode is enabled.", "Enable this for multi-server setups where multiple nodes report as one server listing."})
