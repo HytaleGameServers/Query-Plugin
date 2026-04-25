@@ -57,7 +57,7 @@
     </dependencies>
 
     <build>
-        <finalName>HGS-Query</finalName>
+        <finalName>HGS-Query-${project.version}</finalName>
 
         <plugins>
             <plugin>
