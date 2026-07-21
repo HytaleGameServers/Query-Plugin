@@ -7,7 +7,11 @@ import lombok.Setter;
 import net.hytalegameservers.query.QueryPlugin;
 import net.hytalegameservers.query.config.Config;
 import net.hytalegameservers.query.config.NetworkConfig;
-import net.hytalegameservers.query.data.*;
+import net.hytalegameservers.query.data.PlayerData;
+import net.hytalegameservers.query.data.PluginData;
+import net.hytalegameservers.query.data.ServerData;
+import net.hytalegameservers.query.data.SystemData;
+import net.hytalegameservers.query.data.WorldData;
 
 /**
  * A point-in-time data snapshot from a single node.
